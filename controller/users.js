@@ -4,7 +4,7 @@ const { queryDB } = require('./db')
 
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await queryDB('SELECT * FROM users')
+    const { rows } = await queryDB('SELECT * FROM user')
     res.json({ success: true, data: rows })
   } catch (error) {
     res.status(400).json({ success: false, data: null, error })
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     const { name } = req.body
     console.log({ name })
     const { rows, error } = await queryDB(
-      'INSERT into users(name) values($1) RETURNING id, name',
+      'INSERT into user(name) values($1) RETURNING id, name',
       [name]
     )
     if (error) {
@@ -33,7 +33,7 @@ router
   .get(async (req, res) => {
     try {
       const { userId } = req.params
-      const { rows, error } = await queryDB('SELECT * FROM users WHERE id=$1', [userId])
+      const { rows, error } = await queryDB('SELECT * FROM user WHERE id=$1', [userId])
       if (error) {
         return res.status(400).json({ success: false, data: null, error })
       }
@@ -45,7 +45,7 @@ router
   .put(async (req, res) => {
     try {
       const { userId } = req.params
-      const { rows, error } = await queryDB('SELECT * FROM users WHERE id=$1', [userId])
+      const { rows, error } = await queryDB('SELECT * FROM user WHERE id=$1', [userId])
       if (error) {
         return res.status(400).json({ success: false, data: null, error })
       }
@@ -57,7 +57,7 @@ router
   .delete(async (req, res) => {
     try {
       const { userId } = req.params
-      const { rows, error } = await queryDB('SELECT * FROM users WHERE id=$1', [userId])
+      const { rows, error } = await queryDB('SELECT * FROM user WHERE id=$1', [userId])
       if (error) {
         return res.status(400).json({ success: false, data: null, error })
       }
