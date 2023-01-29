@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const loginRouter = require('express').Router()
 const { queryDB } = require('./db')
 
@@ -28,8 +29,15 @@ loginRouter.post('/', async (request, response) => {
       .json({ success: false, error: 'username or password incorrect' })
   }
 
+  const userForToken = {
+    id: user.id,
+    username: user.username
+  }
+
+  console.log({ userForToken })
+
   // TODO CREATE JWT
-  const token = ''
+  const token = jwt.sign(userForToken, process.env.token)
   return response.json({ success: true, token })
 })
 
