@@ -4,13 +4,15 @@ const express = require('express')
 const bodyParse = require('body-parser')
 const app = express()
 const EXPRESS_PORT = process.env.PORT || 3000
-const users = require('./controller/users')
+const usersRouter = require('./controller/users')
+const loginRouter = require('./controller/users')
 
 app.use(bodyParse.urlencoded({ extended: true }))
 app.use(bodyParse.json())
 
 // USERS
-app.use('/users', users)
+app.use('/users', usersRouter)
+app.use('/login', loginRouter)
 
 app.listen(EXPRESS_PORT, async () => {
   await conectDB()
