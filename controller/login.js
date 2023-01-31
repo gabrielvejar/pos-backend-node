@@ -31,13 +31,14 @@ loginRouter.post('/', async (request, response) => {
 
   const userForToken = {
     id: user.id,
-    username: user.username
+    username: user.username,
+    role: user.role
   }
 
   console.log({ userForToken })
 
-  // TODO CREATE JWT
-  const token = jwt.sign(userForToken, process.env.token)
+  // CREATE JWT
+  const token = jwt.sign(userForToken, process.env.JWT_SECRET)
   return response.json({ success: true, token })
 })
 

@@ -1,5 +1,4 @@
-#LOCAL
-#GET http://localhost:3000/users HTTP/1.1
+#LOCAL http://localhost:3000/users
 
-#REMOTE
-GET https://pos-backend-node-production.up.railway.app/users HTTP/1.1
+#REMOTE https://pos-backend-node-production.up.railway.app/users
+GET http://localhost:3000/users HTTP/1.1
