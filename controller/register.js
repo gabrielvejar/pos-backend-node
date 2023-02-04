@@ -1,6 +1,8 @@
-const bcrypt = require('bcrypt')
-const registerRouter = require('express').Router()
-const { queryDB } = require('./db')
+import { hash } from 'bcrypt'
+import { Router } from 'express'
+import { queryDB } from './db.js'
+
+const registerRouter = Router()
 
 registerRouter.post('/', async (request, response) => {
   const { rows: getUsersRows } = await queryDB('SELECT * FROM pos_user')
@@ -25,7 +27,7 @@ registerRouter.post('/', async (request, response) => {
       .json({ success: false, error: 'password min length is 4' })
   }
 
-  const hashPassword = await bcrypt.hash(password, 10)
+  const hashPassword = await hash(password, 10)
 
   const { rows: postUsersRows, error } = await queryDB(
     'INSERT INTO pos_user(username, password, role, name) values ($1, $2, $3, $4) RETURNING id, username',
@@ -39,4 +41,4 @@ registerRouter.post('/', async (request, response) => {
   return response.status(201).json({ success: true, data: newUser })
 })
 
-module.exports = registerRouter
+export default registerRouter

@@ -1,7 +1,9 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const loginRouter = require('express').Router()
-const { queryDB } = require('./db')
+import { compare } from 'bcrypt'
+import { Router } from 'express'
+import { queryDB } from './db.js'
+import * as jwt from 'jsonwebtoken'
+
+const loginRouter = Router()
 
 loginRouter.post('/', async (request, response) => {
   const { body } = request
@@ -20,7 +22,7 @@ loginRouter.post('/', async (request, response) => {
   }
 
   // CHECK PASSWORD
-  const compareHash = await bcrypt.compare(password, user?.password)
+  const compareHash = await compare(password, user?.password)
   console.log({ password, dbPass: user?.password, compareHash })
 
   if (!compareHash) {
@@ -42,4 +44,4 @@ loginRouter.post('/', async (request, response) => {
   return response.json({ success: true, token })
 })
 
-module.exports = loginRouter
+export default loginRouter

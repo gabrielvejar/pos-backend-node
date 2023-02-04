@@ -1,21 +1,43 @@
 
-const { Client } = require('pg')
-const client = new Client()
+import pg from 'pg'
+import * as dotenv from 'dotenv'
+const { Client } = pg
+dotenv.config()
 
-const conectDB = async () => {
+let client
+
+const DB_LOCAL = process.env.DB_LOCAL
+const DB_LOCAL_CONFIG = {
+  host: process.env.PGHOST_LOCAL,
+  port: process.env.PGPORT_LOCAL,
+  user: process.env.PGUSER_LOCAL,
+  password: process.env.PGPASSWORD_LOCAL,
+  database: process.env.PGDATABASE_LOCAL
+}
+
+if (DB_LOCAL.toLocaleLowerCase() === 'true') {
+  client = new Client(DB_LOCAL_CONFIG)
+} else {
+  client = new Client()
+}
+
+export const connectDB = async () => {
   try {
-    await client.connect()
-    console.log('Database conected!')
+    client.on('error', async () => {
+      await client.connect()
+    })
+    const connection = await client.connect()
+    console.log('Database connected! 🚀')
+    return connection
   } catch (error) {
-    console.log(error)
-    return { error }
+    throw new Error(error)
   }
 }
 
-const disconectDB = async () => {
+export const disconnectDB = async () => {
   try {
     await client.end()
-    console.log('Database disconected!')
+    console.log('Database disconnected!')
   } catch (error) {
     console.log(error)
     return { error }
@@ -26,15 +48,7 @@ const disconectDB = async () => {
  * @param {String} queryStream
  * @param {Array} values
  */
-const queryDB = async (queryStream, values) => {
-  try {
-    const res = await client.query(queryStream, values)
-    console.log({ res })
-    return res
-  } catch (error) {
-    console.log(error.message)
-    return { error: error.message }
-  }
+export const queryDB = async (queryStream, values) => {
+  const res = await client.query(queryStream, values)
+  return res
 }
-
-module.exports = { conectDB, disconectDB, queryDB }

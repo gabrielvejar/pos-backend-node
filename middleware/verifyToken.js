@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken'
 
-module.exports = (request, response, next) => {
+const verifyToken = (request, response, next) => {
   const authorization = request.get('authorization')
   let token = null
 
@@ -30,3 +30,5 @@ module.exports = (request, response, next) => {
 
   next()
 }
+
+export default verifyToken

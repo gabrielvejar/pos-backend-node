@@ -1,4 +1,10 @@
-#LOCAL http://localhost:3000/users
+
+#LOCAL 
+GET http://localhost:3000/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOjEsImlhdCI6MTY3NTI1MjEyNn0.5loD0nK6H-IOnB_AQZllUD9wcC-xg93SlNjDgtKiQNA
+
+###
 
 #REMOTE https://pos-backend-node-production.up.railway.app/users
-GET http://localhost:3000/users HTTP/1.1
+GET https://pos-backend-node-production.up.railway.app/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOjEsImlhdCI6MTY3NTI1MjEyNn0.5loD0nK6H-IOnB_AQZllUD9wcC-xg93SlNjDgtKiQNA

@@ -1,15 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const bcrypt = require('bcrypt')
-const { queryDB } = require('./db')
-const verifyToken = require('../middleware/verifyToken')
-const verifyAdmin = require('../middleware/verifyAdmin')
+import { Router } from 'express'
+import { hash } from 'bcrypt'
+import { queryDB } from './db.js'
+import verifyToken from '../middleware/verifyToken.js'
+import verifyAdmin from '../middleware/verifyAdmin.js'
+const router = Router()
 
 router.use(verifyToken)
 
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await queryDB('SELECT * FROM pos_user')
+    const { rows } = await queryDB('SELECT id, username, name, role FROM pos_user')
     res.json({ success: true, data: rows })
   } catch (error) {
     res.status(400).json({ success: false, data: null, error })
@@ -34,7 +34,7 @@ router.post('/', verifyAdmin, async (req, res) => {
     }
 
     console.log({ name, username, password })
-    const hashPassword = await bcrypt.hash(password, 10)
+    const hashPassword = await hash(password, 10)
     const { rows, error } = await queryDB(
       'INSERT into pos_user(username, password, name, role) values($1, $2, $3, $4) RETURNING id, username, name, role',
       [username, hashPassword, name, role]
@@ -98,4 +98,4 @@ router
     }
   })
 
-module.exports = router
+export default router
