@@ -1,3 +1,4 @@
+// EXTERNAL
 const jwt = require('jsonwebtoken')
 
 module.exports = (request, response, next) => {

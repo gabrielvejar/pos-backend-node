@@ -1,6 +1,8 @@
+// EXTERNAL
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const loginRouter = require('express').Router()
+// LOCAL
 const { queryDB } = require('./db')
 
 loginRouter.post('/', async (request, response) => {

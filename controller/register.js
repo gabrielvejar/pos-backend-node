@@ -1,5 +1,7 @@
+// EXTERNAL
 const bcrypt = require('bcrypt')
 const registerRouter = require('express').Router()
+// LOCAL
 const { queryDB } = require('./db')
 
 registerRouter.post('/', async (request, response) => {

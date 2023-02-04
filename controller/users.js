@@ -1,6 +1,8 @@
+// EXTERNAL
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
+// LOCAL
 const { queryDB } = require('./db')
 const verifyToken = require('../middleware/verifyToken')
 const verifyAdmin = require('../middleware/verifyAdmin')
