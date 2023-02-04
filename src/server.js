@@ -4,15 +4,15 @@ const express = require('express')
 // const bodyParse = require('body-parser')
 const app = express()
 // LOCAL
-const { connectDB } = require('./controller/db')
-const usersRouter = require('./controller/users')
-const loginRouter = require('./controller/login')
-const registerRouter = require('./controller/register')
+const { connectDB } = require('./db')
+const usersRouter = require('./router/users.router')
+const loginRouter = require('./router/login.router')
+const registerRouter = require('./router/register.router')
 
 const EXPRESS_PORT = process.env.PORT || 3000
 
-// app.use(bodyParse.urlencoded({ extended: true }))
-// app.use(bodyParse.json())
+// MODELS
+require('./models/User.model')
 
 // MIDDLEWARES
 app.use(express.json())

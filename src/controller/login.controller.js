@@ -1,11 +1,10 @@
 // EXTERNAL
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const loginRouter = require('express').Router()
 // LOCAL
-const { queryDB } = require('./db')
+const { queryDB } = require('../db')
 
-loginRouter.post('/', async (request, response) => {
+const login = async (request, response) => {
   const { body } = request
   const { username, password } = body
 
@@ -42,6 +41,6 @@ loginRouter.post('/', async (request, response) => {
   // CREATE JWT
   const token = jwt.sign(userForToken, process.env.JWT_SECRET)
   return response.json({ success: true, token })
-})
+}
 
-module.exports = loginRouter
+module.exports = { login }

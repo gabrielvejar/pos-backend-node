@@ -1,10 +1,9 @@
 // EXTERNAL
 const bcrypt = require('bcrypt')
-const registerRouter = require('express').Router()
 // LOCAL
-const { queryDB } = require('./db')
+const { queryDB } = require('../db')
 
-registerRouter.post('/', async (request, response) => {
+const registerAdmin = async (request, response) => {
   const { rows: getUsersRows } = await queryDB('SELECT * FROM pos_user')
   if (getUsersRows?.length > 0) {
     return response
@@ -39,6 +38,6 @@ registerRouter.post('/', async (request, response) => {
   }
   const newUser = postUsersRows[0]
   return response.status(201).json({ success: true, data: newUser })
-})
+}
 
-module.exports = registerRouter
+module.exports = { registerAdmin }
