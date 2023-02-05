@@ -28,12 +28,15 @@ const sequelize = new Sequelize(PGDATABASE, PGUSER, PGPASSWORD, {
  */
 const connectDB = async () => {
   try {
-    await sequelize.sync(
-      {
-        // force: true
-        alter: true
-      }
-    )
+    if (process.env.DEV_MODE?.toLocaleLowerCase() === 'true') {
+      await sequelize.sync(
+        {
+          // force: true
+          alter: true
+        }
+      )
+    }
+    await sequelize.sync()
     console.log('All models were synchronized successfully.')
   } catch (error) {
     console.error('Unable to connect to the database:', error)

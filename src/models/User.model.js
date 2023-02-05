@@ -14,10 +14,10 @@ const User = sequelize.define('User', {
   firstName: {
     type: DataTypes.STRING,
     allowNull: false
+    // defaultValue: 'Default first name'
   },
   lastName: {
     type: DataTypes.STRING
-    // allowNull defaults to true
   },
   username: {
     type: DataTypes.STRING,
@@ -27,6 +27,11 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  activeFlag: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
   }
 })
 

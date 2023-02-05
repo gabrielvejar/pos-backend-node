@@ -6,7 +6,7 @@ Content-Type: application/json
 {
     "firstName": "gabriel",
     "lastName": "vejar",
-    "username": "gabo9",
+    "username": "gabo10",
     "password": "passpruebatoken",
     "roleId": 4
 }
@@ -19,8 +19,9 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJuYW1lIjoicHJ1ZWJhY2FqYTIiLCJyb2xlIjoxLCJpYXQiOjE2NzQ5NzQ2Mjh9.Xc4NpPdO2RsX0xiseHgJU29TUFltfYWwIqsbuccAgH4
 
 {
-    "name": "caja3",
-    "username": "pruebacaja3",
+    "first_name": "gabriel",
+    "last_name": "vejar",
+    "username": "gabo11",
     "password": "passpruebatoken",
-    "role": 1
+    "role_id": 4
 }

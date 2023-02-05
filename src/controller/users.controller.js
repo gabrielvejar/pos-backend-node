@@ -1,15 +1,16 @@
 // EXTERNAL
 const bcrypt = require('bcrypt')
 // LOCAL
-const { queryDB } = require('../db')
 const User = require('../models/User.model')
 const { defaultErrorResponse } = require('./utils.controller')
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.findAll()
-    console.log({ users })
-    res.json({ success: true, data: users })
+    const usersWithoutPassword = users.map(
+      ({ dataValues: { password, ...userData } }) => userData
+    )
+    res.json({ success: true, data: usersWithoutPassword })
   } catch (error) {
     res.status(400).json({ success: false, data: null, error })
   }
@@ -83,17 +84,17 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { body, params: { userId } } = req
-
-    const [rowsCount] = await User.update(
+    const {
       body,
-      {
-        where: {
-          id: userId
-        }
-      }
-    )
-    if (!rowsCount) {
+      params: { userId }
+    } = req
+
+    // TODO añadir validar datos de body
+
+    // Check user exists
+    const user = await User.findByPk(userId)
+
+    if (!user) {
       return res
         .status(404)
         .json({ success: false, data: null, error: 'user not found' })
@@ -101,28 +102,59 @@ const updateUser = async (req, res) => {
 
     const {
       dataValues: { password, ...restUser }
-    } = await User.findByPk(userId)
+    } = user
 
-    res.status(200).json({ success: true, data: restUser })
+    await User.update(body, {
+      where: {
+        id: userId
+      }
+    })
+
+    // Update new values to response data
+    const data = { ...restUser }
+    for (const key in body) {
+      if (Object.hasOwnProperty.call(data, key)) {
+        data[key] = body[key]
+      }
+    }
+
+    res.status(200).json({ success: true, data })
   } catch (error) {
     defaultErrorResponse(res)
   }
 }
 
-// TODO
 const deleteUser = async (req, res) => {
   try {
-    const { userId } = req.params
-    const { rows, error } = await queryDB(
-      'SELECT * FROM pos_user WHERE id=$1',
-      [userId]
-    )
-    if (error) {
-      return res.status(400).json({ success: false, data: null, error })
+    const {
+      params: { userId }
+    } = req
+
+    // Check user exists
+    const user = await User.findByPk(userId)
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, data: null, error: 'user not found' })
     }
-    res.json({ success: true, data: rows })
+
+    await User.update(
+      { activeFlag: false },
+      {
+        where: {
+          id: userId
+        }
+      }
+    )
+
+    const {
+      dataValues: { password, ...restUser }
+    } = user
+
+    res.status(200).json({ success: true, data: restUser })
   } catch (error) {
-    res.status(400).json({ success: false, data: null, error })
+    defaultErrorResponse(res)
   }
 }
 
