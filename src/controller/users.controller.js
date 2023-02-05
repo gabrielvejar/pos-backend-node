@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 // LOCAL
 const { queryDB } = require('../db')
 const User = require('../models/User.model')
+const { defaultErrorResponse } = require('./utils.controller')
 
 const getUsers = async (req, res) => {
   try {
@@ -16,33 +17,67 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, username, password, role } = req.body
+    const {
+      body: { firstName, lastName, username, password, roleId }
+    } = req
     // TODO añadir validar datos de body
 
-    if (!username || !password || !name || !role) {
-      return res.status(400).json({ success: false, data: null, error: 'missing params' })
-    }
-    // Check username doesn't exist
-    const { rows: usernameRows } = await queryDB(
-      'SELECT * FROM pos_user WHERE username=$1',
-      [username]
-    )
-    if (usernameRows?.length > 0) {
-      return res.status(400).json({ success: false, error: 'username already registered' })
+    // TODO roleId 0 lo toma falsy
+    if (!username || !password || !firstName || !lastName || !roleId) {
+      return res
+        .status(400)
+        .json({ success: false, data: null, error: 'missing params' })
     }
 
-    console.log({ name, username, password })
+    // // Check username doesn't exist
+    // const { rows: usernameRows } = await queryDB(
+    //   'SELECT * FROM pos_user WHERE username=$1',
+    //   [username]
+    // )
+    // if (usernameRows?.length > 0) {
+    //   return res.status(400).json({ success: false, error: 'username already registered' })
+    // }
+
+    // console.log({ name, username, password })
+
     const hashPassword = await bcrypt.hash(password, 10)
-    const { rows, error } = await queryDB(
-      'INSERT into pos_user(username, password, name, role) values($1, $2, $3, $4) RETURNING id, username, name, role',
-      [username, hashPassword, name, role]
-    )
-    if (error) {
-      return res.status(400).json({ success: false, data: null, error })
-    }
-    return res.status(201).json({ success: true, data: rows })
+    // const { rows, error } = await queryDB(
+    //   'INSERT into pos_user(username, password, name, role) values($1, $2, $3, $4) RETURNING id, username, name, role',
+    //   [username, hashPassword, name, role]
+    // )
+    // if (error) {
+    //   return res.status(400).json({ success: false, data: null, error })
+    // }
+
+    const newUser = await User.create({
+      firstName,
+      lastName,
+      username,
+      password: hashPassword,
+      roleId
+    })
+
+    console.log({ newUser })
+
+    const {
+      dataValues: { password: respPassword, ...restNewUser }
+    } = newUser
+
+    return res.status(201).json({ success: true, data: restNewUser })
   } catch (error) {
-    return res.status(400).json({ success: false, data: null, error })
+    // Unique constraint error - username
+    if (error?.name === 'SequelizeUniqueConstraintError') {
+      return res
+        .status(400)
+        .json({ success: false, data: null, error: 'username must be unique' })
+    }
+    // Foreign key error - roleId
+    if (error?.name === 'SequelizeForeignKeyConstraintError') {
+      return res
+        .status(400)
+        .json({ success: false, data: null, error: 'roleId invalid' })
+    }
+    return defaultErrorResponse(res)
   }
 }
 

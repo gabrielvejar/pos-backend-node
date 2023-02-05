@@ -13,6 +13,7 @@ const EXPRESS_PORT = process.env.PORT || 3000
 
 // MODELS
 require('./models/User.model')
+require('./models/Role.model')
 
 // MIDDLEWARES
 app.use(express.json())

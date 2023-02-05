@@ -29,10 +29,10 @@ const sequelize = new Sequelize(PGDATABASE, PGUSER, PGPASSWORD, {
 const connectDB = async () => {
   try {
     await sequelize.sync(
-      // {
-      //   force: true,
-      //   alter: true
-      //  }
+      {
+        // force: true
+        alter: true
+      }
     )
     console.log('All models were synchronized successfully.')
   } catch (error) {

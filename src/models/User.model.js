@@ -1,6 +1,9 @@
+// EXTERNAL
 // const { v4: uuidv4 } = require('uuid')
 const { DataTypes } = require('sequelize')
 const sequelize = require('../db').sequelize
+// LOCAL
+const Role = require('./Role.model')
 
 const User = sequelize.define('User', {
   id: {
@@ -16,8 +19,21 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING
     // allowNull defaults to true
   },
-  userName: {
-    type: DataTypes.STRING
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  }
+})
+
+Role.hasMany(User, {
+  foreignKey: {
+    name: 'roleId',
+    allowNull: false
   }
 })
 
