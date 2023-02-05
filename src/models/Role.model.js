@@ -5,11 +5,12 @@ const sequelize = require('../db').sequelize
 const Role = sequelize.define('Role', {
   id: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    allowNull: false
   },
-  roleName: {
+  name: {
     type: DataTypes.STRING,
+    primaryKey: true,
     allowNull: false
   },
   cashier: {

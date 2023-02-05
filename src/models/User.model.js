@@ -35,9 +35,12 @@ const User = sequelize.define('User', {
   }
 })
 
+// User.belongsTo(Role)
+// Role.hasMany(User)
+
 Role.hasMany(User, {
   foreignKey: {
-    name: 'roleId',
+    name: 'roleName',
     allowNull: false
   }
 })

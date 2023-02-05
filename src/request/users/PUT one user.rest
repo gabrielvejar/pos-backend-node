@@ -3,5 +3,5 @@ PUT http://localhost:3000/users/1
 Content-Type: application/json
 
 {
-    "lastName": "nuevo apellido2",
+    "username": "gabo2"
 }

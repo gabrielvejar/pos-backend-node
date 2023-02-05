@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt')
 // LOCAL
 const User = require('../models/User.model')
-const { defaultErrorResponse } = require('./utils.controller')
+const { defaultErrorResponse, handleErrors } = require('./utils.controller')
 
 const getUsers = async (req, res) => {
   try {
@@ -19,12 +19,12 @@ const getUsers = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const {
-      body: { firstName, lastName, username, password, roleId }
+      body: { firstName, lastName, username, password, roleName }
     } = req
     // TODO añadir validar datos de body
+    console.log({ firstName, lastName, username, password, roleName })
 
-    // TODO roleId 0 lo toma falsy
-    if (!username || !password || !firstName || !lastName || !roleId) {
+    if (!username || !password || !firstName || !lastName || !roleName) {
       return res
         .status(400)
         .json({ success: false, data: null, error: 'missing params' })
@@ -39,24 +39,12 @@ const createUser = async (req, res) => {
       lastName,
       username,
       password: hashPassword,
-      roleId
+      roleName
     })
 
     return res.status(201).json({ success: true, data: restNewUser })
   } catch (error) {
-    // Unique constraint error - username
-    if (error?.name === 'SequelizeUniqueConstraintError') {
-      return res
-        .status(400)
-        .json({ success: false, data: null, error: 'username must be unique' })
-    }
-    // Foreign key error - roleId
-    if (error?.name === 'SequelizeForeignKeyConstraintError') {
-      return res
-        .status(400)
-        .json({ success: false, data: null, error: 'roleId invalid' })
-    }
-    return defaultErrorResponse(res)
+    handleErrors(res, error, 'roleName', 'createUser')
   }
 }
 
@@ -120,7 +108,7 @@ const updateUser = async (req, res) => {
 
     res.status(200).json({ success: true, data })
   } catch (error) {
-    defaultErrorResponse(res)
+    handleErrors(res, error, 'roleName', 'updateUser')
   }
 }
 

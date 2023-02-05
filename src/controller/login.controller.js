@@ -2,45 +2,55 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 // LOCAL
-const { queryDB } = require('../db')
+const Role = require('../models/Role.model')
+const User = require('../models/User.model')
+const { defaultErrorResponse } = require('./utils.controller')
 
 const login = async (request, response) => {
-  const { body } = request
-  const { username, password } = body
+  try {
+    const {
+      body: { username, password }
+    } = request
 
-  const res = await queryDB('SELECT * FROM pos_user WHERE username = $1', [
-    username
-  ])
+    // CHECK USER EXISTS
+    const user = await User.findOne({
+      include: { model: Role },
+      where: {
+        username
+      }
+    })
 
-  // CHECK USER EXISTS
-  const user = res.rows?.at(0)
-  if (!user) {
-    return response
-      .status(400)
-      .json({ success: false, error: 'username or password incorrect' })
+    if (!user) {
+      return response
+        .status(400)
+        .json({ success: false, error: 'username or password incorrect' })
+    }
+
+    // CHECK PASSWORD
+    const compareHash = await bcrypt.compare(password, user?.password)
+    console.log({ password, dbPass: user?.password, compareHash })
+
+    if (!compareHash) {
+      return response
+        .status(400)
+        .json({ success: false, error: 'username or password incorrect' })
+    }
+
+    const {
+      dataValues: { password: userPassword, RoleId, Role: role, ...userData }
+    } = user
+    const {
+      dataValues: { createdAt, updatedAt, id: roleId, ...cleanRole }
+    } = role
+    const userForToken = { ...userData, roleId, ...cleanRole }
+
+    // CREATE JWT
+    const token = jwt.sign(userForToken, process.env.JWT_SECRET)
+    return response.json({ success: true, token })
+  } catch (error) {
+    console.log({ loginError: error })
+    defaultErrorResponse(response)
   }
-
-  // CHECK PASSWORD
-  const compareHash = await bcrypt.compare(password, user?.password)
-  console.log({ password, dbPass: user?.password, compareHash })
-
-  if (!compareHash) {
-    return response
-      .status(400)
-      .json({ success: false, error: 'username or password incorrect' })
-  }
-
-  const userForToken = {
-    id: user.id,
-    username: user.username,
-    role: user.role
-  }
-
-  console.log({ userForToken })
-
-  // CREATE JWT
-  const token = jwt.sign(userForToken, process.env.JWT_SECRET)
-  return response.json({ success: true, token })
 }
 
 module.exports = { login }

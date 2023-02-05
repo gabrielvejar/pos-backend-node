@@ -6,9 +6,9 @@ Content-Type: application/json
 {
     "firstName": "gabriel",
     "lastName": "vejar",
-    "username": "gabo10",
+    "username": "gabo2",
     "password": "passpruebatoken",
-    "roleId": 4
+    "roleName": "admin"
 }
 
 ###
@@ -21,7 +21,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJuY
 {
     "first_name": "gabriel",
     "last_name": "vejar",
-    "username": "gabo11",
+    "username": "gabo20",
     "password": "passpruebatoken",
     "role_id": 4
 }
