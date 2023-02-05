@@ -28,7 +28,6 @@ const login = async (request, response) => {
 
     // CHECK PASSWORD
     const compareHash = await bcrypt.compare(password, user?.password)
-    console.log({ password, dbPass: user?.password, compareHash })
 
     if (!compareHash) {
       return response

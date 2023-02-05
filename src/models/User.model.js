@@ -13,8 +13,12 @@ const User = sequelize.define('User', {
   },
   firstName: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
     // defaultValue: 'Default first name'
+    validate: {
+      isAlpha: { msg: 'firstName must have only letters' },
+      len: { args: [2, 15], msg: 'firstName must have length between 2 and 15' }
+    }
   },
   lastName: {
     type: DataTypes.STRING
