@@ -1,13 +1,13 @@
 // EXTERNAL
 require('dotenv').config()
 const express = require('express')
-// const bodyParse = require('body-parser')
 const app = express()
 // LOCAL
 const { connectDB } = require('./db')
 const usersRouter = require('./router/users.router')
 const loginRouter = require('./router/login.router')
 const registerRouter = require('./router/register.router')
+const validateJson = require('./middleware/validateJson')
 
 const EXPRESS_PORT = process.env.PORT || 3000
 
@@ -17,6 +17,8 @@ require('./models/Role.model')
 
 // MIDDLEWARES
 app.use(express.json())
+app.use(express.urlencoded())
+app.use(validateJson)
 
 // ROUTES
 app.use('/users', usersRouter)

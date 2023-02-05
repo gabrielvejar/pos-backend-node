@@ -29,25 +29,7 @@ const createUser = async (req, res) => {
         .json({ success: false, data: null, error: 'missing params' })
     }
 
-    // // Check username doesn't exist
-    // const { rows: usernameRows } = await queryDB(
-    //   'SELECT * FROM pos_user WHERE username=$1',
-    //   [username]
-    // )
-    // if (usernameRows?.length > 0) {
-    //   return res.status(400).json({ success: false, error: 'username already registered' })
-    // }
-
-    // console.log({ name, username, password })
-
     const hashPassword = await bcrypt.hash(password, 10)
-    // const { rows, error } = await queryDB(
-    //   'INSERT into pos_user(username, password, name, role) values($1, $2, $3, $4) RETURNING id, username, name, role',
-    //   [username, hashPassword, name, role]
-    // )
-    // if (error) {
-    //   return res.status(400).json({ success: false, data: null, error })
-    // }
 
     const {
       dataValues: { password: respPassword, ...restNewUser }
@@ -101,9 +83,7 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { userId } = req.params
-
-    const { body } = req
+    const { body, params: { userId } } = req
 
     const [rowsCount] = await User.update(
       body,
@@ -125,9 +105,10 @@ const updateUser = async (req, res) => {
 
     res.status(200).json({ success: true, data: restUser })
   } catch (error) {
-    res.status(400).json({ success: false, data: null, error })
+    defaultErrorResponse(res)
   }
 }
+
 // TODO
 const deleteUser = async (req, res) => {
   try {
