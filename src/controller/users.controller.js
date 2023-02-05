@@ -49,19 +49,15 @@ const createUser = async (req, res) => {
     //   return res.status(400).json({ success: false, data: null, error })
     // }
 
-    const newUser = await User.create({
+    const {
+      dataValues: { password: respPassword, ...restNewUser }
+    } = await User.create({
       firstName,
       lastName,
       username,
       password: hashPassword,
       roleId
     })
-
-    console.log({ newUser })
-
-    const {
-      dataValues: { password: respPassword, ...restNewUser }
-    } = newUser
 
     return res.status(201).json({ success: true, data: restNewUser })
   } catch (error) {
@@ -84,31 +80,50 @@ const createUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { userId } = req.params
-    const { rows, error } = await queryDB(
-      'SELECT * FROM pos_user WHERE id=$1',
-      [userId]
-    )
-    if (error) {
-      return res.status(400).json({ success: false, data: null, error })
+
+    const user = await User.findByPk(userId)
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, data: null, error: 'user not found' })
     }
-    res.json({ success: true, data: rows })
+
+    const {
+      dataValues: { password, ...restUser }
+    } = user
+
+    res.status(200).json({ success: true, data: restUser })
   } catch (error) {
     res.status(400).json({ success: false, data: null, error })
   }
 }
 
-// TODO
 const updateUser = async (req, res) => {
   try {
     const { userId } = req.params
-    const { rows, error } = await queryDB(
-      'SELECT * FROM pos_user WHERE id=$1',
-      [userId]
+
+    const { body } = req
+
+    const [rowsCount] = await User.update(
+      body,
+      {
+        where: {
+          id: userId
+        }
+      }
     )
-    if (error) {
-      return res.status(400).json({ success: false, data: null, error })
+    if (!rowsCount) {
+      return res
+        .status(404)
+        .json({ success: false, data: null, error: 'user not found' })
     }
-    res.json({ success: true, data: rows })
+
+    const {
+      dataValues: { password, ...restUser }
+    } = await User.findByPk(userId)
+
+    res.status(200).json({ success: true, data: restUser })
   } catch (error) {
     res.status(400).json({ success: false, data: null, error })
   }
