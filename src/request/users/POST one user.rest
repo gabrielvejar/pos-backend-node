@@ -12,3 +12,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJuY
     "password": "passpruebatoken",
     "role": 1
 }
+
+###
+POST http://localhost:3000/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "firstName": "gabriel",
+    "lastName": "vejar",
+    "username": "gabo7",
+    "password": "passpruebatoken",
+    "roleId": 4
+}
