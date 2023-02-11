@@ -1,36 +1,39 @@
 // EXTERNAL
-require('dotenv').config()
-const express = require('express')
-const app = express()
+require("dotenv").config();
+const express = require("express");
+const app = express();
 // LOCAL
-const { connectDB } = require('./db')
-const usersRouter = require('./router/users.router')
-const loginRouter = require('./router/login.router')
-const registerRouter = require('./router/register.router')
-const validateJson = require('./middleware/validateJson')
+const prisma = require("./db");
+const validateJson = require("./middleware/validateJson");
+const routerV1 = require("./router/v1.router");
 
-const EXPRESS_PORT = process.env.PORT || 3000
+const EXPRESS_PORT = process.env.PORT || 3000;
 
-// MODELS
-require('./models/User.model')
-require('./models/Role.model')
+async function main() {
+  // MIDDLEWARES
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(validateJson);
 
-// MIDDLEWARES
-app.use(express.json())
-app.use(express.urlencoded())
-app.use(validateJson)
+  // ROUTES
+  app.use("/v1", routerV1);
+  //404
+  app.use((_, response) => {
+    response.sendStatus(404);
+  });
 
-// ROUTES
-app.use('/users', usersRouter)
-app.use('/login', loginRouter)
-app.use('/register', registerRouter)
+  // LISTEN
+  app.listen(EXPRESS_PORT, async () => {
+    console.log("Server listen on port", EXPRESS_PORT);
+  });
+}
 
-app.listen(EXPRESS_PORT, async () => {
-  try {
-    await connectDB()
-  } catch (error) {
-    console.log('Error connecting database 😩')
-    console.error('Error: ' + error.message)
-  }
-  console.log('Server listen on port', EXPRESS_PORT)
-})
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
