@@ -1,0 +1,7 @@
+# LOCAL
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+    "firstName": "g3"
+}

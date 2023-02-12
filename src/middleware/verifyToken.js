@@ -25,9 +25,27 @@ module.exports = (request, response, next) => {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
 
-  const { id: userId, role: userRole } = decodedToken
+  if (!decodedToken.activeFlag) {
+    return response.status(403).json({ error: 'user is inactive' })
+  }
+
+  const {
+    id: userId,
+    roleName: userRole,
+    cashier,
+    sales,
+    adminProducts,
+    adminUsers,
+    adminAdmins
+  } = decodedToken
+
   request.userId = userId
   request.userRole = userRole
+  request.cashier = cashier
+  request.sales = sales
+  request.adminProducts = adminProducts
+  request.adminUsers = adminUsers
+  request.adminAdmins = adminAdmins
 
   next()
 }

@@ -1,0 +1,27 @@
+#LOCAL
+POST http://localhost:3000/users HTTP/1.1
+Content-Type: application/json
+# Authorization: Bearer 
+
+{
+    "firstName": "gabriel",
+    "lastName": "vejar",
+    "username": "gabo2",
+    "password": "passpruebatoken",
+    "roleName": "admin"
+}
+
+###
+
+#REMOTE
+POST https://pos-backend-node-production.up.railway.app/users HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer 
+
+{
+    "first_name": "gabriel",
+    "last_name": "vejar",
+    "username": "gabo20",
+    "password": "passpruebatoken",
+    "role_id": 4
+}
