@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt')
 const prisma = require('../db')
 const { defaultErrorResponse } = require('./utils.controller')
 
+/**
+ * Get all users
+ */
 const getUsers = async (req, res) => {
   try {
     const users = await prisma.users.findMany({
@@ -24,6 +27,9 @@ const getUsers = async (req, res) => {
   }
 }
 
+/**
+ * Create one user
+ */
 const createUser = async (request, response) => {
   const {
     body: {
@@ -69,6 +75,9 @@ const createUser = async (request, response) => {
   }
 }
 
+/**
+ * Get one user
+ */
 const getUser = async (request, response) => {
   try {
     const { userId } = request.params
@@ -87,6 +96,9 @@ const getUser = async (request, response) => {
   }
 }
 
+/**
+ * Update one user
+ */
 const updateUser = async (request, response) => {
   const {
     body,
@@ -157,6 +169,9 @@ const updateUser = async (request, response) => {
   }
 }
 
+/**
+ * Delete one user
+ */
 const deleteUser = async (request, response) => {
   try {
     const {

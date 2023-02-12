@@ -5,6 +5,9 @@ const jwt = require('jsonwebtoken')
 const prisma = require('../db')
 const { defaultErrorResponse } = require('./utils.controller')
 
+/**
+ * Login controller
+ */
 const login = async (request, response) => {
   try {
     const {

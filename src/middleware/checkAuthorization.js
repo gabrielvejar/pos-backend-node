@@ -1,10 +1,10 @@
 const { defaultErrorResponse } = require('../controller/utils.controller')
 
 /**
- *
+ * Middleware to check user role authorization
  * @param {*} roles - authorized roles
  */
-const checkRoleAuth = (roles) => (request, response, next) => {
+const checkRoleAuth = (roles = ['ADMIN']) => (request, response, next) => {
   try {
     const { userRole } = request
     if (!userRole || !roles.includes(userRole)) {
@@ -18,6 +18,4 @@ const checkRoleAuth = (roles) => (request, response, next) => {
   }
 }
 
-module.exports = {
-  checkRoleAuth
-}
+module.exports = checkRoleAuth

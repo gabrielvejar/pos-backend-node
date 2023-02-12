@@ -15,18 +15,6 @@ const validateResult = (request, response, next) => {
   }
 }
 
-// const basicAlphanumericValidation = ({ fieldName, minLength = 0 }) => {
-//   return body(fieldName, `${fieldName} invalid`)
-//     .isAlphanumeric()
-//     .bail()
-//     .not()
-//     .isEmpty()
-//     .bail()
-//     .not()
-//     .isBoolean({ strict: true })
-//     .isLength({ min: minLength })
-// }
-
 const baseChecker = (fieldName) => check(fieldName)
 
 const basicAlphanumericCheckValidation = ({ fieldName, isOptional = false, minLength = 4 }) => {

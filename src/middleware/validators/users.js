@@ -33,6 +33,9 @@ const validateLogin = [
   validateResult
 ]
 
+/**
+ * User roles
+ */
 const roles = ['ADMIN', 'SUPERVISOR', 'CASHIER', 'SALES']
 
 /**

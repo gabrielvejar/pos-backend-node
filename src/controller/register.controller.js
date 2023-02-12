@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt')
 // LOCAL
 const prisma = require('../db')
 
+/**
+ * Sign-up controller
+ */
 const registerAdmin = async (request, response) => {
   const { body: { first_name: firstName, last_name: lastName, username, password } } = request
 

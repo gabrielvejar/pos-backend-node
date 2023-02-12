@@ -4,7 +4,7 @@ const router = express.Router()
 // LOCAL
 const userController = require('../controller/users.controller')
 const verifyToken = require('../middleware/verifyToken')
-const { checkRoleAuth } = require('../middleware/checkAuthorization')
+const checkRoleAuth = require('../middleware/checkAuthorization')
 
 // json fields validations
 const { validateCreateUser } = require('../middleware/validators/users')

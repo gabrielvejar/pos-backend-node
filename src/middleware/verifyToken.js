@@ -1,7 +1,10 @@
 // EXTERNAL
 const jwt = require('jsonwebtoken')
 
-module.exports = (request, response, next) => {
+/**
+ * Middleware to verify the user token
+ */
+const verifyToken = (request, response, next) => {
   const authorization = request.get('authorization')
   let token = null
 
@@ -45,3 +48,5 @@ module.exports = (request, response, next) => {
   // request.adminAdmins = adminAdmins
   next()
 }
+
+module.exports = verifyToken
