@@ -1,4 +1,5 @@
 #LOCAL http://localhost:3000/users
 
 #REMOTE https://pos-backend-node-production.up.railway.app/users
-GET http://localhost:3000/users HTTP/1.1
+GET http://localhost:3000/v1/users HTTP/1.1
+Authorization: Bearer 

@@ -1,56 +1,23 @@
-const checkUserIsCashier = (request, response, next) => {
-  if (!request.cashier) {
-    return response
-      .status(403)
-      .json({ success: false, error: 'user is not cashier' })
-  }
-  next()
-}
+const { defaultErrorResponse } = require('../controller/utils.controller')
 
-const checkUserIsSales = (request, response, next) => {
-  if (!request.sales) {
-    return response
-      .status(403)
-      .json({ success: false, error: 'user is not sales' })
-  }
-  next()
-}
-
-const checkUserIsProductsAdmin = (request, response, next) => {
-  if (!request.adminProducts) {
-    return response
-      .status(403)
-      .json({ success: false, error: 'user is not products admin' })
-  }
-  next()
-}
-
-const checkUserIsUsersAdmin = (request, response, next) => {
-  if (!request.adminUsers) {
-    return response
-      .status(403)
-      .json({ success: false, error: 'user is not users admin' })
-  }
-  next()
-}
-
-const checkUserIsAdminsAdmin = (request, response, next) => {
-  if (request.body.roleId !== 0) {
+/**
+ *
+ * @param {*} roles - authorized roles
+ */
+const checkRoleAuth = (roles) => (request, response, next) => {
+  try {
+    const { userRole } = request
+    if (!userRole || !roles.includes(userRole)) {
+      return response
+        .status(403)
+        .json({ success: false, error: 'user is not authorized' })
+    }
     next()
+  } catch (error) {
+    defaultErrorResponse(response)
   }
-
-  if (!request.adminAdmins) {
-    return response
-      .status(403)
-      .json({ success: false, error: 'user can not manipulates admins' })
-  }
-  next()
 }
 
 module.exports = {
-  checkUserIsCashier,
-  checkUserIsAdminsAdmin,
-  checkUserIsProductsAdmin,
-  checkUserIsSales,
-  checkUserIsUsersAdmin
+  checkRoleAuth
 }

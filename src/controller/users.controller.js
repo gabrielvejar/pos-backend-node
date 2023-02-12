@@ -1,153 +1,189 @@
 // EXTERNAL
 const bcrypt = require('bcrypt')
-// LOCAL
-// TODO
-const User = require('../models/User.model')
-const { defaultErrorResponse, handleErrors } = require('./utils.controller')
 
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const prisma = require('../db')
+const { defaultErrorResponse } = require('./utils.controller')
 
 const getUsers = async (req, res) => {
   try {
-    prisma.users.findMany({select: {id: true}})
-    // const users = await User.findAll()
-    // const usersWithoutPassword = users.map(
-    //   ({ dataValues: { password, ...userData } }) => userData
-    // )
-    // res.json({ success: true, data: usersWithoutPassword })
+    const users = await prisma.users.findMany({
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        username: true,
+        role: true,
+        active_flag: true,
+        created_at: true,
+        updated_at: true
+      }
+    })
+    res.json({ success: true, data: users })
   } catch (error) {
     res.status(400).json({ success: false, data: null, error })
   }
 }
 
-const createUser = async (req, res) => {
+const createUser = async (request, response) => {
+  const {
+    body: {
+      first_name: firstName,
+      last_name: lastName,
+      username,
+      password,
+      role
+    }
+  } = request
   try {
-  //   const {
-  //     body: { firstName, lastName, username, password, roleName }
-  //   } = req
-  //   // TODO añadir validar datos de body
-  //   console.log({ firstName, lastName, username, password, roleName })
+    const hashPassword = await bcrypt.hash(password, 10)
 
-  //   if (!username || !password || !firstName || !lastName || !roleName) {
-  //     return res
-  //       .status(400)
-  //       .json({ success: false, data: null, error: 'missing params' })
-  //   }
+    const { password: _, ...newUser } = await prisma.users.create({
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        username,
+        password: hashPassword,
+        role
+      }
+    })
 
-  //   const hashPassword = await bcrypt.hash(password, 10)
+    return response.status(201).json({ success: true, data: newUser })
+  } catch (e) {
+    let error = ''
+    // unique username error
+    if (e.code === 'P2002') {
+      error = `The username '${username}' already exists`
 
-  //   const {
-  //     dataValues: { password: respPassword, ...restNewUser }
-  //   } = await User.create({
-  //     firstName,
-  //     lastName,
-  //     username,
-  //     password: hashPassword,
-  //     roleName
-  //   })
+      // any other prisma error
+    } else if (e.code) {
+      error = e.message
+    }
 
-  //   return res.status(201).json({ success: true, data: restNewUser })
-  } catch (error) {
-    handleErrors(res, error, 'roleName', 'createUser')
+    if (error) {
+      return response.status(400).json({
+        success: false,
+        error
+      })
+    }
+    return defaultErrorResponse(response)
   }
 }
 
-const getUser = async (req, res) => {
+const getUser = async (request, response) => {
   try {
-    // const { userId } = req.params
+    const { userId } = request.params
 
-    // const user = await User.findByPk(userId)
-
-    // if (!user) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, data: null, error: 'user not found' })
-    // }
-
-    // const {
-    //   dataValues: { password, ...restUser }
-    // } = user
-
-    // res.status(200).json({ success: true, data: restUser })
+    const { password, ...user } = await prisma.users.findUnique({
+      where: { id: userId }
+    })
+    response.status(200).json({ success: true, data: user })
   } catch (error) {
-    res.status(400).json({ success: false, data: null, error })
+    if (error.code) {
+      return response
+        .status(400)
+        .json({ success: false, data: null, error: error.message })
+    }
+    return defaultErrorResponse(response)
   }
 }
 
-const updateUser = async (req, res) => {
+const updateUser = async (request, response) => {
+  const {
+    body,
+    params: { userId }
+  } = request
+  const {
+    first_name: firstName,
+    last_name: lastName,
+    password,
+    role,
+    active_flag: activeFlag,
+    username
+  } = body
+
   try {
-    // const {
-    //   body,
-    //   params: { userId }
-    // } = req
+    // Check user exists
+    const user = await prisma.users.findUnique({
+      where: { id: userId }
+    })
+    if (!user) {
+      return response
+        .status(404)
+        .json({ success: false, data: null, error: 'user not found' })
+    }
 
-    // // TODO añadir validar datos de body
+    // Hash new password (if provided)
+    let hashPassword
+    if (password) {
+      hashPassword = await bcrypt.hash(password, 10)
+    }
 
-    // // Check user exists
-    // const user = await User.findByPk(userId)
+    // User new data
+    const userNewData = {
+      username: username ?? user.username,
+      first_name: firstName ?? user.first_name,
+      last_name: lastName ?? user.last_name,
+      password: hashPassword ?? user.password,
+      role: role ?? user.role,
+      active_flag: activeFlag ?? user.active_flag,
+      updated_at: new Date()
+    }
 
-    // if (!user) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, data: null, error: 'user not found' })
-    // }
+    // Update user
+    const { password: _, ...updateUser } = await prisma.users.update({
+      where: { id: userId },
+      data: userNewData
+    })
 
-    // const {
-    //   dataValues: { password, ...restUser }
-    // } = user
+    return response.status(200).json({ success: true, data: updateUser })
+  } catch (e) {
+    let error = ''
+    // unique username error
+    if (e.code === 'P2002') {
+      error = `The username '${username}' already exists`
 
-    // await User.update(body, {
-    //   where: {
-    //     id: userId
-    //   }
-    // })
+      // any other prisma error
+    } else if (e.code) {
+      error = e.message
+    }
 
-    // // Update new values to response data
-    // const data = { ...restUser }
-    // for (const key in body) {
-    //   if (Object.hasOwnProperty.call(data, key)) {
-    //     data[key] = body[key]
-    //   }
-    // }
-
-    // res.status(200).json({ success: true, data })
-  } catch (error) {
-    handleErrors(res, error, 'roleName', 'updateUser')
+    if (error) {
+      return response.status(400).json({
+        success: false,
+        error
+      })
+    }
+    return defaultErrorResponse(response)
   }
 }
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (request, response) => {
   try {
-    // const {
-    //   params: { userId }
-    // } = req
+    const {
+      params: { userId }
+    } = request
 
-    // // Check user exists
-    // const user = await User.findByPk(userId)
+    // Check user exists
+    const user = await prisma.users.findUnique({
+      where: { id: userId }
+    })
+    if (!user) {
+      return response
+        .status(404)
+        .json({ success: false, data: null, error: 'user not found' })
+    }
 
-    // if (!user) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, data: null, error: 'user not found' })
-    // }
+    const { password: _, ...deletedUser } = await prisma.users.update({
+      where: { id: userId },
+      data: {
+        active_flag: false,
+        updated_at: new Date()
+      }
+    })
 
-    // await User.update(
-    //   { activeFlag: false },
-    //   {
-    //     where: {
-    //       id: userId
-    //     }
-    //   }
-    // )
-
-    // const {
-    //   dataValues: { password, ...restUser }
-    // } = user
-
-    // res.status(200).json({ success: true, data: restUser })
+    return response.status(200).json({ success: true, data: deletedUser })
   } catch (error) {
-    defaultErrorResponse(res)
+    defaultErrorResponse(response)
   }
 }
 

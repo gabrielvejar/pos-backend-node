@@ -1,5 +1,5 @@
 #LOCAL
-GET http://localhost:3000/users/1 HTTP/1.1
+GET http://localhost:3000/v1/users/17bffb29-61b3-41fa-9830-a9b326fda739 HTTP/1.1
 
 ### 
 

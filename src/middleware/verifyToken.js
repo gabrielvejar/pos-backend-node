@@ -5,12 +5,9 @@ module.exports = (request, response, next) => {
   const authorization = request.get('authorization')
   let token = null
 
-  console.log({ authorization })
-
   if (authorization && authorization.toLocaleLowerCase().startsWith('bearer')) {
     token = authorization.substring(7)
   }
-  console.log({ token })
 
   const decodedToken =
     token &&
@@ -22,30 +19,29 @@ module.exports = (request, response, next) => {
     })
 
   if (!token || !decodedToken.id) {
-    return response.status(401).json({ error: 'token missing or invalid' })
+    return response.status(401).json({ success: false, error: 'token missing or invalid' })
   }
 
-  if (!decodedToken.activeFlag) {
-    return response.status(403).json({ error: 'user is inactive' })
+  if (!decodedToken.active_flag) {
+    return response.status(403).json({ success: false, error: 'user is inactive' })
   }
 
   const {
     id: userId,
-    roleName: userRole,
-    cashier,
-    sales,
-    adminProducts,
-    adminUsers,
-    adminAdmins
+    role
+    // cashier,
+    // sales,
+    // adminProducts,
+    // adminUsers,
+    // adminAdmins
   } = decodedToken
 
   request.userId = userId
-  request.userRole = userRole
-  request.cashier = cashier
-  request.sales = sales
-  request.adminProducts = adminProducts
-  request.adminUsers = adminUsers
-  request.adminAdmins = adminAdmins
-
+  request.userRole = role
+  // request.cashier = cashier
+  // request.sales = sales
+  // request.adminProducts = adminProducts
+  // request.adminUsers = adminUsers
+  // request.adminAdmins = adminAdmins
   next()
 }

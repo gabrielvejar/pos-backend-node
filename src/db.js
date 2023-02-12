@@ -3,7 +3,6 @@ const prisma = new PrismaClient()
 
 module.exports = prisma
 
-
 // // EXTERNAL
 // const { Sequelize } = require('sequelize')
 

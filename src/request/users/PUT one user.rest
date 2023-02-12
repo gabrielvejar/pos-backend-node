@@ -1,7 +1,9 @@
 # LOCAL
-PUT http://localhost:3000/users/1
+PUT http://localhost:3000/v1/users/ffa87253-47da-422b-bb53-279a983ec5b4
 Content-Type: application/json
+Authorization: Bearer 
 
 {
-    "firstName": "g3"
+    "username": "testAuth",
+    "password": "testAuth"
 }
